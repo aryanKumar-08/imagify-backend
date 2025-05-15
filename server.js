@@ -39,12 +39,22 @@ const app = express()
 
 app.use(express.json())
 
-// ✅ Restrict CORS to your frontend
+import cors from 'cors'
+
+const allowedOrigins = ['https://imagifyv1.netlify.app', 'http://localhost:5173'];
+
 app.use(cors({
-  origin: 'https://imagifyv1.netlify.app/',
+  origin: function (origin, callback) {
+    if (!origin || allowedOrigins.includes(origin)) {
+      callback(null, true);
+    } else {
+      callback(new Error('Not allowed by CORS'));
+    }
+  },
   methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'],
-  credentials: true
-}))
+  credentials: true,
+}));
+
 
 // ✅ Handle preflight explicitly if needed
 app.options('*', cors())
